@@ -30,20 +30,18 @@ public class Tokenize extends EvalFunc<DataBag> {
     private BagFactory bfac;
     private TupleFactory tfac;
     private Analyzer analyzer;
+    private String analyzerClassName;
 
     public Tokenize() throws IOException {
         this(StandardAnalyzer.class.getName());
     }
 
     public Tokenize(final String analyzerClassName) throws IOException {
+        this.analyzerClassName = analyzerClassName;
         Env.inBackground(new Env.BackgroundProcedure() {
             @Override
             public void execute(Configuration conf) throws IOException {
-                try {
-                    analyzer = AnalyzerUtils.createAnalyzer(analyzerClassName);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+            	analyzer = null; 
                 bfac = BagFactory.getInstance();
                 tfac = TupleFactory.getInstance();
             }
@@ -55,8 +53,15 @@ public class Tokenize extends EvalFunc<DataBag> {
         if (input == null || input.size() < 2) {
             return null;
         }
-        TokenStream stream = analyzer.tokenStream(input.get(0).toString(),
-                new StringReader((String) input.get(1)));
+        if (analyzer==null) {
+        	try {
+    			analyzer = AnalyzerUtils.createAnalyzer(analyzerClassName);
+    		} catch (ClassNotFoundException e) {
+    			throw new RuntimeException(e);
+    		}
+        }
+
+        TokenStream stream = analyzer.tokenStream(input.get(0).toString(), new StringReader((String) input.get(1)));
         stream.reset();
         CharTermAttribute termAtt = stream.addAttribute(CharTermAttribute.class);
         stream.reset();
@@ -82,4 +87,12 @@ public class Tokenize extends EvalFunc<DataBag> {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<String> getCacheFiles() {
+    	if(analyzer.equal("org.apache.lucene.analysis.cn.stanford.StanfordSegmenterAnalyzer"))
+    		return ImmutableList.of(hdfs://hadoop1:9000/user/hadoop/hyf/data#data);
+    	return null;
+    }
 }
+
