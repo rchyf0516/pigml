@@ -41,7 +41,7 @@ public class Tokenize extends EvalFunc<DataBag> {
         Env.inBackground(new Env.BackgroundProcedure() {
             @Override
             public void execute(Configuration conf) throws IOException {
-            	analyzer = null; 
+                analyzer = null; 
                 bfac = BagFactory.getInstance();
                 tfac = TupleFactory.getInstance();
             }
@@ -55,7 +55,7 @@ public class Tokenize extends EvalFunc<DataBag> {
         }
         if (analyzer==null) {
         	try {
-    			analyzer = AnalyzerUtils.createAnalyzer(analyzerClassName);
+    		    analyzer = AnalyzerUtils.createAnalyzer(analyzerClassName);
     		} catch (ClassNotFoundException e) {
     			throw new RuntimeException(e);
     		}
