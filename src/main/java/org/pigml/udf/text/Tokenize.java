@@ -90,7 +90,7 @@ public class Tokenize extends EvalFunc<DataBag> {
 
     @Override
     public List<String> getCacheFiles() {
-    	if(analyzer.equal("org.apache.lucene.analysis.cn.stanford.StanfordSegmenterAnalyzer"))
+    	if(analyzer.equals("org.apache.lucene.analysis.cn.stanford.StanfordSegmenterAnalyzer"))
     		return ImmutableList.of(hdfs://hadoop1:9000/user/hadoop/hyf/data#data);
     	return null;
     }
